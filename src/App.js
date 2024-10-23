@@ -62,7 +62,7 @@ function App() {
     // Update the ingredients list based on the current last shown dishes
     const newIngredientsList = {};
     Object.values(lastDishes).flat().forEach(dish => {
-      // Assuming ingredientsList has the necessary data to extract ingredient quantities
+      // Assuming `ingredientsList` has the necessary data to extract ingredient quantities
       if (ingredientsList[dish]) {
         newIngredientsList[dish] = ingredientsList[dish];
       }
@@ -134,6 +134,14 @@ function App() {
             <div>
               <h3>Dish Count:</h3>
               <pre>{JSON.stringify(dishCount, null, 2)}</pre>
+            </div>
+          )}
+
+          {/* Display selected ingredients for shopping */}
+          {selectedIngredients.length > 0 && (
+            <div>
+              <h3>Selected Ingredients for Shopping:</h3>
+              <pre>{JSON.stringify(selectedIngredients, null, 2)}</pre>
             </div>
           )}
         </Box>
