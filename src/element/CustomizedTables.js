@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { styled } from '@mui/material/styles';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -36,78 +36,74 @@ export default function CustomizedTables({ parsedMenu, onReceiveLastShown }) {
   const [dishCount, setDishCount] = useState({}); // Track how many times each dish has been shown
   const [infoMessage, setInfoMessage] = useState('');  // Info message for when no new dishes are available
 
-  if (!parsedMenu) {
-    return <div>No menu data available</div>;
-  }
+  const initialized = useRef(false);
 
-  // Initialize the menu data if it's not already set
-  if (Object.keys(currentMenu).length === 0 && parsedMenu) {
-    const menuData = {};
-    const shown = {}; // Initialize shown dishes tracker
-    const count = {}; // Initialize the dish count tracker
+  useEffect(() => {
+    if (parsedMenu && !initialized.current) {
+      const menuData = {};
+      const shown = {}; // Initialize shown dishes tracker
+      const count = {}; // Initialize the dish count tracker
 
-    parsedMenu.split('; ').forEach(entry => {
-      const [className, dishes] = entry.split(': ');
-      menuData[className] = dishes.split(', '); // Keep dishes as an array of strings
-      shown[className] = []; // Track shown dishes for each category
-      dishes.split(', ').forEach(dish => {
-        count[dish] = 0; // Initialize each dish count to 0
+      parsedMenu.split('; ').forEach(entry => {
+        const [className, dishes] = entry.split(': ');
+        menuData[className] = dishes.split(', '); // Keep dishes as an array of strings
+        shown[className] = []; // Track shown dishes for each category
+        dishes.split(', ').forEach(dish => {
+          count[dish] = 0; // Initialize each dish count to 0
+        });
       });
-    });
 
-    setCurrentMenu(menuData);
-    setShownDishes(shown);
-    setDishCount(count);
-  }
+      setCurrentMenu(menuData);
+      setShownDishes(shown);
+      setDishCount(count);
+
+      // Send initial last shown dishes to App.js after generating the menu
+      onReceiveLastShown(menuData, count);
+
+      initialized.current = true; // Mark as initialized
+    }
+  }, [parsedMenu, onReceiveLastShown]);
 
   // Function to handle changing a dish
   const handleChangeDish = (className, day) => {
-    const currentDishes = currentMenu[className]; // This is now an array of dishes
+    const currentDishes = currentMenu[className]; // Array of dishes for the given class
     const alreadyShown = shownDishes[className];
 
     // Find a dish that hasn't been shown yet
     const newDish = currentDishes.find(dish => !alreadyShown.includes(dish));
 
     if (newDish) {
+      // Update the menu with the new dish
       const newMenu = {
         ...currentMenu,
         [className]: [...currentDishes], // Make a copy of the array
       };
       newMenu[className][day] = newDish;
 
+      // Update shown dishes for the category
       const newShownDishes = {
         ...shownDishes,
         [className]: [...alreadyShown, newDish], // Add the new dish to the shown list
       };
 
+      // Update the count of how many times the dish has been shown
       const newDishCount = {
         ...dishCount,
         [newDish]: (dishCount[newDish] || 0) + 1,
       };
 
+      // Update state
       setCurrentMenu(newMenu);
       setShownDishes(newShownDishes);
       setDishCount(newDishCount);
       setInfoMessage('');
+
+      // Send updated last shown dishes and dish count to App.js after a change
+      onReceiveLastShown(newMenu, newDishCount);
     } else {
+      // If no new dishes are available, show a message
       setInfoMessage(`No new dishes available for ${className}.`);
     }
-  };
-
-  const getLastShownDishes = () => {
-    const lastShown = {};
-    Object.keys(currentMenu).forEach((className) => {
-      lastShown[className] = currentMenu[className].filter(Boolean); // Filter out empty slots
-    });
-    return lastShown;
-  };
-
-  const sendLastShownDishesToApp = () => {
-    const lastDishes = getLastShownDishes();
-    const count = dishCount;
-
-    // Send last shown dishes and count to App.js via the callback
-    onReceiveLastShown(lastDishes, count);
   };
 
   return (
@@ -154,16 +150,6 @@ export default function CustomizedTables({ parsedMenu, onReceiveLastShown }) {
           </div>
         )}
       </TableContainer>
-
-      {/* Button to send last shown dishes and count back to App.js */}
-      <div style={{ textAlign: 'center', marginTop: '20px' }}>
-        <Button
-          variant="contained"
-          onClick={sendLastShownDishesToApp}
-        >
-          Send Last Shown Dishes to App
-        </Button>
-      </div>
     </div>
   );
 }

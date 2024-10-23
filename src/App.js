@@ -10,16 +10,17 @@ import Typography from '@mui/material/Typography';
 
 function App() {
   const [menu, setMenu] = useState(null);  // State to store the parsed menu
-  const [ingredientsList, setIngredientsList] = useState(null);  // State to store ingredients list
+  const [ingredientsList, setIngredientsList] = useState([]);  // State to store ingredients list
   const [lastShownDishes, setLastShownDishes] = useState(null);  // State to store the last shown dishes
   const [dishCount, setDishCount] = useState(null);  // State to store the dish count
+  const [selectedIngredients, setSelectedIngredients] = useState([]); // State to store selected ingredients for shopping
 
   // Function to parse the raw menu data into the desired format
   const parseMenu = (rawData) => {
     const dishes = JSON.parse(rawData); // Assuming rawData is JSON string
 
     const groupedDishes = {};
-    const uniqueIngredients = new Set();
+    const ingredients = {}; // To collect ingredient names and quantities
 
     dishes.forEach(({ className, dishName, ingredientName }) => {
       // Group dish names by class
@@ -28,8 +29,11 @@ function App() {
       }
       groupedDishes[className].add(dishName);
 
-      // Collect unique ingredients
-      uniqueIngredients.add(ingredientName);
+      // Collect ingredients and their quantities
+      if (!ingredients[ingredientName]) {
+        ingredients[ingredientName] = 0;
+      }
+      ingredients[ingredientName]++;
     });
 
     // Format the menu by class
@@ -37,24 +41,38 @@ function App() {
       return `${className}: ${[...dishes].join(', ')}`;
     }).join('; ');
 
-    // Return the parsed menu and ingredients list
     return {
       parsedMenu: formattedMenu,
-      uniqueIngredients: [...uniqueIngredients].join(', '),
+      ingredientsList: ingredients,
     };
   };
 
   // Function to handle raw data passed from GetNextWeekMenu
   const handleMenuData = (rawData) => {
-    const { parsedMenu, uniqueIngredients } = parseMenu(rawData);
+    const { parsedMenu, ingredientsList } = parseMenu(rawData);
     setMenu(parsedMenu);               // Update the state with the parsed menu data
-    setIngredientsList(uniqueIngredients);  // Update the state with the ingredients list
+    setIngredientsList(Object.entries(ingredientsList));  // Update the state with the ingredients list
   };
 
   // Callback to receive the last shown dishes and dish count from CustomizedTables
   const handleLastShownDishes = (lastDishes, dishCounts) => {
     setLastShownDishes(lastDishes);
     setDishCount(dishCounts);
+
+    // Update the ingredients list based on the current last shown dishes
+    const newIngredientsList = {};
+    Object.values(lastDishes).flat().forEach(dish => {
+      // Assuming ingredientsList has the necessary data to extract ingredient quantities
+      if (ingredientsList[dish]) {
+        newIngredientsList[dish] = ingredientsList[dish];
+      }
+    });
+    setIngredientsList(Object.entries(newIngredientsList));
+  };
+
+  // Callback to handle selected ingredients from CheckboxLabels
+  const handleSelectedIngredients = (selectedIngredients) => {
+    setSelectedIngredients(selectedIngredients);
   };
 
   return (
@@ -80,8 +98,8 @@ function App() {
             <Box style={styles.horizontalContainer}>
               <Typography>Do you have this in your refrigerator?</Typography>
               {/* Pass ingredientsList as a prop to CheckboxLabels */}
-              {ingredientsList ? (
-                <CheckboxLabels ingredientsData={ingredientsList} />
+              {ingredientsList.length > 0 ? (
+                <CheckboxLabels ingredientsData={ingredientsList} onSelectedIngredients={handleSelectedIngredients} />
               ) : (
                 <Typography>No ingredients data available</Typography>
               )}
@@ -89,7 +107,12 @@ function App() {
 
             <Box style={styles.horizontalContainer}>
               <Typography>Buy!</Typography>
-              <PinnedSubheaderList />
+              {/* Pass selectedIngredients as a prop to PinnedSubheaderList */}
+              {selectedIngredients.length > 0 ? (
+                <PinnedSubheaderList ingredientsToBuy={selectedIngredients} />
+              ) : (
+                <Typography>No items selected to buy</Typography>
+              )}
             </Box>
           </div>
         </Box>
