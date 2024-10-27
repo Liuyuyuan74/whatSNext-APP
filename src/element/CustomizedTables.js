@@ -112,7 +112,7 @@ export default function CustomizedTables({ parsedMenu, onReceiveLastShown }) {
         <Table sx={{ minWidth: 700 }} aria-label="customized table">
           <TableHead>
             <TableRow>
-              <StyledTableCell>Category</StyledTableCell>
+              <StyledTableCell>NUTRITION</StyledTableCell>
               {daysOfWeek.map(day => (
                 <StyledTableCell key={day} align="center">{day}</StyledTableCell>
               ))}

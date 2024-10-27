@@ -8,10 +8,10 @@ export default function GetNextWeekMenu({ onMenuFetched }) {
   const [error, setError] = useState(null); // State to store errors
   const [loading, setLoading] = useState(false); // Loading state
 
-  // Function to fetch menu when button is clicked
   const fetchMenu = async () => {
-    setLoading(true); // Set loading to true when fetching begins
-    setError(null); // Clear any previous errors
+    setLoading(true);
+    setError(null);
+  
     try {
       const response = await fetch('https://htjdonjs8c.execute-api.us-east-2.amazonaws.com/test/', {
         method: 'GET',
@@ -19,22 +19,30 @@ export default function GetNextWeekMenu({ onMenuFetched }) {
           'Content-Type': 'application/json',
         },
       });
-      
+  
       if (!response.ok) {
         throw new Error(`Error: ${response.status}`);
       }
       
       const data = await response.json();
-      
-      // Call the callback function and pass the raw data to App.js
-      onMenuFetched(data.body); // Pass raw data (unparsed) to App.js
+      console.log('Fetched data:', data); // Check if `data.body` is a string
+
+      // Parse `data.body` if it's a JSON string
+      const parsedData = JSON.parse(data.body);
+  
+      // Shuffle the array
+      const randomizedData = JSON.stringify(parsedData.sort(() => 0.5 - Math.random()));
+  
+      onMenuFetched(randomizedData); // Send randomized data to App component
     } catch (err) {
       console.error('Error fetching menu:', err);
       setError('Failed to fetch the menu. Please try again.');
     } finally {
-      setLoading(false); // Set loading to false after fetching completes
+      setLoading(false);
     }
   };
+  
+  
 
   return (
     <div>

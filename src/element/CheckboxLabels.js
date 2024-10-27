@@ -6,13 +6,16 @@ import Checkbox from '@mui/material/Checkbox';
 
 export default function CheckboxLabels({ ingredientsData, onSelectedIngredients }) {
   // Initialize state with all ingredients checked
-  const [checkedItems, setCheckedItems] = useState(() => {
+  const [checkedItems, setCheckedItems] = useState({});
+
+  // Update `checkedItems` whenever `ingredientsData` changes
+  useEffect(() => {
     const initialCheckedState = {};
     ingredientsData.forEach(([ingredient]) => {
       initialCheckedState[ingredient] = true;
     });
-    return initialCheckedState;
-  });
+    setCheckedItems(initialCheckedState);
+  }, [ingredientsData]);
 
   // Effect to update parent component with the checked ingredients
   useEffect(() => {
@@ -20,7 +23,7 @@ export default function CheckboxLabels({ ingredientsData, onSelectedIngredients 
       .filter(([, isChecked]) => isChecked)
       .map(([ingredient]) => ingredient);
     onSelectedIngredients(selectedIngredients);
-  }, [checkedItems, onSelectedIngredients, ingredientsData.length]);
+  }, [checkedItems, onSelectedIngredients]);
 
   // Handle checkbox change
   const handleChange = (ingredient) => {

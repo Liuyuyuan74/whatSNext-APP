@@ -49,10 +49,29 @@ function App() {
 
   // Function to handle raw data passed from GetNextWeekMenu
   const handleMenuData = (rawData) => {
-    const { parsedMenu, ingredientsList } = parseMenu(rawData);
-    setMenu(parsedMenu);               // Update the state with the parsed menu data
-    setIngredientsList(Object.entries(ingredientsList));  // Update the state with the ingredients list
+
+    if(rawData){
+      const { parsedMenu, ingredientsList } = parseMenu(rawData);
+      setMenu(parsedMenu);               // Update the state with the parsed menu data
+      setIngredientsList(Object.entries(ingredientsList));  // Update the state with the ingredients list
+      setSelectedIngredients([]); // Clear selected ingredients on each new menu generation
+    }
   };
+
+  React.useEffect(() => {
+    if (menu) {
+      console.log('Menu updated:', menu);
+      // Trigger further updates if needed based on new menu data
+    }
+  }, [menu]);
+  
+  React.useEffect(() => {
+    if (ingredientsList.length > 0) {
+      console.log('Ingredients list updated:', ingredientsList);
+      // Ensure components relying on ingredientsList are updated
+    }
+  }, [ingredientsList]);
+  
 
   // Callback to receive the last shown dishes and dish count from CustomizedTables
   const handleLastShownDishes = (lastDishes, dishCounts) => {
