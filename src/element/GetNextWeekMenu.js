@@ -25,15 +25,12 @@ export default function GetNextWeekMenu({ onMenuFetched }) {
       }
       
       const data = await response.json();
-      console.log('Fetched data:', data); // Check if `data.body` is a string
+      console.log('Fetched data:', data); 
 
-      // Parse `data.body` if it's a JSON string
-      const parsedData = JSON.parse(data.body);
+      // // Parse `data.body` if it's a JSON string
+      // const parsedData = JSON.parse(data.body);
   
-      // Shuffle the array
-      const randomizedData = JSON.stringify(parsedData.sort(() => 0.5 - Math.random()));
-  
-      onMenuFetched(randomizedData); // Send randomized data to App component
+      onMenuFetched(data.body); // Send randomized data to App component
     } catch (err) {
       console.error('Error fetching menu:', err);
       setError('Failed to fetch the menu. Please try again.');

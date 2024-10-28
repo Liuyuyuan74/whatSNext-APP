@@ -64,40 +64,83 @@ export default function AddDish() {
         variant="outlined"
         value={dishName}
         onChange={(e) => setDishName(e.target.value)}
-        sx={{ input: { color: 'white' }, label: { color: 'white' } }}
+        sx={{
+          input: { color: 'white', borderColor: 'white' },
+          label: { color: 'white' },
+          fieldset: { borderColor: 'white' },
+        }}
       />
 
       <FormGroup>
         <FormControlLabel
-          control={<Checkbox checked={classIds.includes(1)} onChange={(e) => {
-            if (e.target.checked) {
-              setClassIds([...classIds, 1]);
-            } else {
-              setClassIds(classIds.filter((id) => id !== 1));
-            }
-          }} />}
+          control={<Checkbox 
+            checked={classIds.includes(1)} 
+            onChange={(e) => {
+              if (e.target.checked) {
+                setClassIds([...classIds, 1]);
+              } else {
+                setClassIds(classIds.filter((id) => id !== 1));
+              }
+            }} 
+            sx={{
+              color: 'white',
+              '&.Mui-checked': {
+                color: 'white',
+              },
+              // '& .MuiSvgIcon-root': {
+              //   border: '1px solid white',
+              //   borderRadius: '3px',
+              // },
+            }}
+          />}
           label="staple food"
           sx={{ color: 'white' }}
         />
         <FormControlLabel
-          control={<Checkbox checked={classIds.includes(2)} onChange={(e) => {
-            if (e.target.checked) {
-              setClassIds([...classIds, 2]);
-            } else {
-              setClassIds(classIds.filter((id) => id !== 2));
-            }
-          }} />}
+          control={<Checkbox 
+            checked={classIds.includes(2)} 
+            onChange={(e) => {
+              if (e.target.checked) {
+                setClassIds([...classIds, 2]);
+              } else {
+                setClassIds(classIds.filter((id) => id !== 2));
+              }
+            }} 
+            sx={{
+              color: 'white',
+              '&.Mui-checked': {
+                color: 'white',
+              },
+              // '& .MuiSvgIcon-root': {
+              //   border: '1px solid white',
+              //   borderRadius: '3px',
+              // },
+            }}
+          />}
           label="protein"
           sx={{ color: 'white' }}
         />
         <FormControlLabel
-          control={<Checkbox checked={classIds.includes(3)} onChange={(e) => {
-            if (e.target.checked) {
-              setClassIds([...classIds, 3]);
-            } else {
-              setClassIds(classIds.filter((id) => id !== 3));
-            }
-          }} />}
+          control={<Checkbox 
+            checked={classIds.includes(3)} 
+            onChange={(e) => {
+              if (e.target.checked) {
+                setClassIds([...classIds, 3]);
+              } else {
+                setClassIds(classIds.filter((id) => id !== 3));
+              }
+            }} 
+            sx={{
+              color: 'white',
+              '&.Mui-checked': {
+                color: 'white',
+              },
+              // '& .MuiSvgIcon-root': {
+              //   border: '1px solid white',
+              //   borderRadius: '3px',
+              // },
+            }}
+          />}
           label="vegetable"
           sx={{ color: 'white' }}
         />
@@ -111,7 +154,11 @@ export default function AddDish() {
           variant="outlined"
           value={ingredient}
           onChange={(e) => setIngredient(e.target.value)}
-          sx={{ input: { color: 'white' }, label: { color: 'white' } }}
+          sx={{
+            input: { color: 'white', borderColor: 'white' },
+            label: { color: 'white' },
+            fieldset: { borderColor: 'white' },
+          }}
         />
         <Button variant="contained" endIcon={<AddCircleIcon />} onClick={handleAddIngredient}>
           Add

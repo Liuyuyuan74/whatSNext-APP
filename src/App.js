@@ -40,7 +40,7 @@ function App() {
     const formattedMenu = Object.entries(groupedDishes).map(([className, dishes]) => {
       return `${className}: ${[...dishes].join(', ')}`;
     }).join('; ');
-
+    console.log('perse menu:', formattedMenu, ingredients); 
     return {
       parsedMenu: formattedMenu,
       ingredientsList: ingredients,
@@ -57,22 +57,7 @@ function App() {
       setSelectedIngredients([]); // Clear selected ingredients on each new menu generation
     }
   };
-
-  React.useEffect(() => {
-    if (menu) {
-      console.log('Menu updated:', menu);
-      // Trigger further updates if needed based on new menu data
-    }
-  }, [menu]);
   
-  React.useEffect(() => {
-    if (ingredientsList.length > 0) {
-      console.log('Ingredients list updated:', ingredientsList);
-      // Ensure components relying on ingredientsList are updated
-    }
-  }, [ingredientsList]);
-  
-
   // Callback to receive the last shown dishes and dish count from CustomizedTables
   const handleLastShownDishes = (lastDishes, dishCounts) => {
     setLastShownDishes(lastDishes);
@@ -102,16 +87,14 @@ function App() {
           {/* Pass handleMenuData to GetNextWeekMenu */}
           <GetNextWeekMenu onMenuFetched={handleMenuData} />
         </Box>
-
-        <Box style={styles.container}>
-          {/* Pass parsedMenu (menu) as a prop to CustomizedTables */}
-          {menu ? (
-            <CustomizedTables parsedMenu={menu} onReceiveLastShown={handleLastShownDishes} />
-          ) : (
-            <Typography>No menu data available</Typography>
-          )}
-        </Box>
-
+          <Box style={styles.container}>
+            {/* Pass parsedMenu (menu) as a prop to CustomizedTables */}
+            {menu ? (
+              <CustomizedTables parsedMenu={menu} onReceiveLastShown={handleLastShownDishes} />
+            ) : (
+              <Typography>No menu data available</Typography>
+            )}
+          </Box>
         <Box style={styles.container}>
           <div style={styles.horizontalSplitContainer}>
             <Box style={styles.horizontalContainer}>
